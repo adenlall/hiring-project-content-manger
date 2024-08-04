@@ -41,7 +41,7 @@ To prevent abuse and ensure fair usage of my API, I've implemented HTTP rate lim
 - Reduce the impact of DoS attacks
 - Manage API traffic
 
-I use [name of rate limiting library, e.g., express-rate-limit] to implement this feature. The current rate limit is set to [your rate limit, e.g., 100 requests per 15 minutes] per IP address.
+I use express-rate-limit to implement this feature.
 
 ### Authenticated Routes
 
