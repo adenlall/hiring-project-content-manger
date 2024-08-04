@@ -1,0 +1,173 @@
+openapi: 3.0.0
+info:
+  title: Authentication API
+  version: 1.0.0
+  description: API for user authentication and management
+
+paths:
+  /auth:
+    post:
+      summary: Welcome authenticated user
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Welcome message with user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - confirm
+              properties:
+                name:
+                  type: string
+                  minLength: 5
+                  maxLength: 20
+                bio:
+                  type: string
+                  maxLength: 100
+                  nullable: true
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                confirm:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Bad request (validation error)
+
+  /auth/login:
+    post:
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+        '401':
+          description: Unauthorized
+
+  /auth/logout:
+    post:
+      summary: User logout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Logout successful
+        '400':
+          description: Bad request
+
+  /auth/refresh-tokens:
+    post:
+      summary: Refresh access tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+      responses:
+        '200':
+          description: Tokens refreshed successfully
+        '401':
+          description: Unauthorized
+
+  /auth/reset-password:
+    post:
+      summary: Reset user password
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        bio:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+      required:
+        - name
+        - email
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
